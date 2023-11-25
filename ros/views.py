@@ -31,7 +31,7 @@ class RosViews(viewsets.ModelViewSet):
     def talk_ros(self, request: Request) -> Response:
         try:
             router = ros_api.Api('172.16.10.1', user='Lantore', password='1')
-            r = router.talk('/system/identity/print')
+            r = router.talk('/user/print')
             # hd508aezw2m.sn.mynetname.net
             # 102.215.57.75
 
