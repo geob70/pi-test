@@ -39,19 +39,13 @@ class RosViews(viewsets.ModelViewSet):
             api = connection.get_api()
 
             # Add a profile with the desired limitations
-            profile = api.get_resource(
-                "/ip/hotspot/user/profile/add",
-                name="profile1",
-                rate_limit="256k/512k",
-                # shared_users="10",
+            profile = api.get_resource("/ip/hotspot/user/profile").add(
+                name="profile1", rate_limit="256k/512k", shared_users="10"
             )
 
             # Add a user with the desired profile and limitations
-            user = api.get_resource(
-                "/ip/hotspot/user/add",
-                name="user1",
-                password="password1",
-                profile="profile1",
+            user = api.get_resource("/ip/hotspot/user").add(
+                name="user1", password="password1", profile="profile1"
             )
 
             print(user)
