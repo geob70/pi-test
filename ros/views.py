@@ -34,6 +34,7 @@ class RosViews(viewsets.ModelViewSet):
                 host="172.16.10.1",
                 username="Lantore",
                 password="1",
+                plaintext_login=True,
             )
             api = connection.get_api()
 
