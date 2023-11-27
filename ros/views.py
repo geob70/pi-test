@@ -31,12 +31,14 @@ class RosViews(viewsets.ModelViewSet):
     def talk_ros(self, request: Request) -> Response:
         try:
             connection = routeros_api.RouterOsApiPool(
-                "172.16.10.1", username="Lantore", password="1"
+                host="172.16.10.1",
+                username="Lantore",
+                password="1",
             )
             api = connection.get_api()
 
             # Add a profile with the desired limitations
-            profile = connection.get_api().cmd(
+            profile = api.cmd(
                 "/ip/hotspot/user/profile/add",
                 name="profile1",
                 rate_limit="256k/512k",
@@ -44,17 +46,19 @@ class RosViews(viewsets.ModelViewSet):
             )
 
             # Add a user with the desired profile and limitations
-            user = connection.get_api().cmd(
+            user = api.cmd(
                 "/ip/hotspot/user/add",
                 name="user1",
                 password="password1",
                 profile="profile1",
             )
 
+            print(user)
+
             # Close the connection
             connection.disconnect()
 
-            return Response({"data": user}, status=status.HTTP_200_OK)
+            return Response({"data": "user"}, status=status.HTTP_200_OK)
         except ValueError as error:
             return Response(
                 {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
