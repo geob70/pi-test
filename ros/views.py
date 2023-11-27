@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import status, permissions, viewsets
 from rest_framework.decorators import action
-import ros_api
+import routeros_api
 
 
 class RosViews(viewsets.ModelViewSet):
@@ -30,12 +30,32 @@ class RosViews(viewsets.ModelViewSet):
     )
     def talk_ros(self, request: Request) -> Response:
         try:
-            router = ros_api.Api('172.16.10.1', user='Lantore', password='1')
-            r = router.talk('/user-manager/session')
-            # hd508aezw2m.sn.mynetname.net
-            # 102.215.57.75
+            connection = routeros_api.RouterOsApiPool(
+                "172.16.10.1", username="Lantore", password="1"
+            )
+            api = connection.get_api()
 
-            # print(r)
-            return Response({'data': r}, status=status.HTTP_200_OK)
+            # Add a profile with the desired limitations
+            profile = connection.get_api().cmd(
+                "/ip/hotspot/user/profile/add",
+                name="profile1",
+                rate_limit="256k/512k",
+                # shared_users="10",
+            )
+
+            # Add a user with the desired profile and limitations
+            user = connection.get_api().cmd(
+                "/ip/hotspot/user/add",
+                name="user1",
+                password="password1",
+                profile="profile1",
+            )
+
+            # Close the connection
+            connection.disconnect()
+
+            return Response({"data": user}, status=status.HTTP_200_OK)
         except ValueError as error:
-            return Response({'Error': str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
