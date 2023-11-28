@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import status, permissions, viewsets
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 import routeros_api
 
 
@@ -66,7 +66,6 @@ class RosViews(viewsets.ModelViewSet):
             # Fetch List/Resource
             list = api.get_resource("/ip/hotspot/user/profile")
             profiles = list.get()
-            print(profiles)
 
             return Response({"profiles": profiles}, status=status.HTTP_200_OK)
 
@@ -117,3 +116,58 @@ class RosViews(viewsets.ModelViewSet):
                 return Response(
                     {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
+
+    @action(
+        methods=["POST", "PATCH", "GET"],
+        detail=False,
+        permission_classes=[permissions.AllowAny],
+        serializer_class=[],
+        url_path="users",
+    )
+    def users(self, request: Request) -> Response:
+        """Users endpoint"""
+        connection = routeros_api.RouterOsApiPool(
+            host="172.16.10.1",
+            username="Lantore",
+            password="1",
+            plaintext_login=True,
+        )
+        api = connection.get_api()
+
+        try:
+            # Fetch All Users
+            users = api.get_resource("/ip/hotspot/user")
+            all_users = users.get()
+
+            # Fetch Active Users
+            # active_users = users.get(filter={"active": "true"})
+
+            return Response({"users": all_users}, status=status.HTTP_200_OK)
+        except ValueError as error:
+            return Response(
+                {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+@api_view(["GET"])
+def get_user_stats(request: Request) -> Response:
+    # Fetch User Statistics
+    user_id = request.query_params.get("user_id", None)
+
+    connection = routeros_api.RouterOsApiPool(
+        host="172.16.10.1",
+        username="Lantore",
+        password="1",
+        plaintext_login=True,
+    )
+    api = connection.get_api()
+
+    try:
+        user_stats = api.get_resource("/ip/hotspot/user/stats")
+        stats = user_stats.get(id=user_id)
+        # Do something with query_param
+        return Response({"stats": stats}, status=status.HTTP_200_OK)
+    except ValueError as error:
+        return Response(
+            {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
