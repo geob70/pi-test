@@ -167,9 +167,11 @@ def get_user_stats(request: Request) -> Response:
     api = connection.get_api()
 
     try:
-        user_stats = api.get_resource("/ip/hotspot/user/stats")
-        stats = user_stats.get(id=user_id)
-        # Do something with query_param
+        user = api.get_resource("/ip/hotspot/user")
+
+
+        # Fetch user stats
+        stats = user.get(id=user_id)
         return Response({"stats": stats}, status=status.HTTP_200_OK)
     except ValueError as error:
         return Response(
