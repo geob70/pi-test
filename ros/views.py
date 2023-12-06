@@ -54,7 +54,7 @@ class RosViews(viewsets.ModelViewSet):
                 connection.disconnect()
 
                 return Response(
-                    {"message": "Profile created successfully", "data": request.data},
+                    {"message": "Profile created successfully", "data": profile},
                     status=status.HTTP_200_OK,
                 )
             except ValueError as error:
@@ -134,13 +134,17 @@ class RosViews(viewsets.ModelViewSet):
         )
         api = connection.get_api()
 
+        active = request.query_params.get("active", None)
+
         try:
             # Fetch All Users
             users = api.get_resource("/ip/hotspot/user")
             all_users = users.get()
 
-            # Fetch Active Users
-            # active_users = users.get(filter={"active": "true"})
+            if active is not None:
+                # Fetch Active Users
+                active_users = users.get(filter={"active": "true"})
+                return Response({"active_users": active_users}, status=status.HTTP_200_OK)
 
             return Response({"users": all_users}, status=status.HTTP_200_OK)
         except ValueError as error:
@@ -155,9 +159,9 @@ def get_user_stats(request: Request) -> Response:
     user_id = request.query_params.get("user_id", None)
 
     connection = routeros_api.RouterOsApiPool(
-        host="172.16.10.1",
-        username="Lantore",
-        password="1",
+        host="172.16.10.1", #send this int the request body
+        username="Lantore", #send this int the request body
+        password="1", #send this int the request body
         plaintext_login=True,
     )
     api = connection.get_api()
