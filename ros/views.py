@@ -248,14 +248,15 @@ def fetch_data_usage(request: Request) -> Response:
     )
     api = connection.get_api()
 
-    username = request.query_params.get("username", None)
+    userid = request.query_params.get("user_id", None)
+    print(userid)
 
     try:
-        if username is None:
-            return Response({"message": "User name missing"}, status=status.HTTP_200_OK)
+        if userid is None:
+            return Response({"message": "User user_id missing"}, status=status.HTTP_200_OK)
         # Fetch data usage per day
         data_usage = api.get_resource("/ip/hotspot/user").get(
-            name=username, stats="daily"
+            id=userid, stats="daily"
         )
 
         # Close the connection
