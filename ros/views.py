@@ -234,3 +234,34 @@ def disable_user(request: Request) -> Response:
         return Response(
             {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+
+@api_view(["GET"])
+def fetch_data_usage(request: Request) -> Response:
+    """fetch user data usage"""
+
+    connection = routeros_api.RouterOsApiPool(
+        host="172.16.10.1",  # send this int the request body
+        username="Lantore",  # send this int the request body
+        password="1",  # send this int the request body
+        plaintext_login=True,
+    )
+    api = connection.get_api()
+
+    username = request.query_params.get("username", None)
+
+    try:
+        if username is None:
+            return Response({"message": "User name missing"}, status=status.HTTP_200_OK)
+        # Fetch data usage per day
+        data_usage = api.get_resource("/ip/hotspot/user").get(
+            name=username, stats="daily"
+        )
+
+        # Close the connection
+        connection.disconnect()
+        return Response({"data_usage": data_usage}, status=status.HTTP_200_OK)
+    except ValueError as error:
+        return Response(
+            {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
