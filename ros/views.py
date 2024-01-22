@@ -5,6 +5,16 @@ from rest_framework.decorators import action, api_view
 import routeros_api
 
 
+def openConnection(data):
+    connection = routeros_api.RouterOsApiPool(
+        host=data["host"],  # "172.16.10.1"
+        username=data["name"],  # "Lantore"
+        password=data["password"],  # "1"
+        plaintext_login=True,
+    )
+    return connection
+
+
 class RosViews(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
     authentication_classes = ()
@@ -17,7 +27,7 @@ class RosViews(viewsets.ModelViewSet):
         serializer_class=[],
         url_path="ping",
     )
-    def ping(self, request: Request) -> Response:
+    def ping(self, _: Request) -> Response:
         """Check raspberry server avalability"""
         return Response({"message": "Good response"}, status=status.HTTP_200_OK)
 
@@ -29,19 +39,14 @@ class RosViews(viewsets.ModelViewSet):
         url_path="profile",
     )
     def profile(self, request: Request) -> Response:
-        """Hotspot profile with limitations"""
-        connection = routeros_api.RouterOsApiPool(
-            host="172.16.10.1",
-            username="Lantore",
-            password="1",
-            plaintext_login=True,
-        )
+        """Hotspot profile"""
+        connection = openConnection(request.data)
         api = connection.get_api()
 
         if request.method == "POST":
             # All fields are in string format
             profile_name = request.data["profile_name"]
-            rate_limit = request.data["rate_limit"]
+            rate_limit = request.data["rate_limit"]  # e.g 2048000 for 2gb
             shared_users = request.data["shared_users"]
 
             try:
@@ -63,14 +68,18 @@ class RosViews(viewsets.ModelViewSet):
                 )
 
         if request.method == "GET":
-            # Fetch List/Resource
-            list = api.get_resource("/ip/hotspot/user/profile")
-            profiles = list.get()
+            try:
+                # Fetch List/Resource
+                list = api.get_resource("/ip/hotspot/user/profile")
+                profiles = list.get()
 
-            # Close the connection
-            connection.disconnect()
-
-            return Response({"profiles": profiles}, status=status.HTTP_200_OK)
+                # Close the connection
+                connection.disconnect()
+                return Response({"profiles": profiles}, status=status.HTTP_200_OK)
+            except ValueError as error:
+                return Response(
+                    {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
 
     @action(
         methods=["POST", "PATCH"],
@@ -81,23 +90,30 @@ class RosViews(viewsets.ModelViewSet):
     )
     def hotspot_user(self, request: Request) -> Response:
         """Create a hotspot user profile"""
-        connection = routeros_api.RouterOsApiPool(
-            host="172.16.10.1",
-            username="Lantore",
-            password="1",
-            plaintext_login=True,
-        )
+        connection = openConnection(request.data)
         api = connection.get_api()
 
+        data = request.data
+
         if request.method == "PATCH":
-            # Update User Profile
-            user_profile = api.get_resource("/ip/hotspot/user/profile")
-            user_profile.set(id="1", name="new_name", rate_limit="10M/10M")
+            try:
+                # Update User Profile
+                user_profile = api.get_resource("/ip/hotspot/user/profile")
+                user_profile.set(
+                    id=data["user_id"], name=data["name"], rate_limit=data["rate_limit"]
+                )  # "10M/10M"
 
-            # Close the connection
-            connection.disconnect()
+                # Close the connection
+                connection.disconnect()
 
-            return Response({"message": "yoooo"}, status=status.HTTP_200_OK)
+                return Response(
+                    {"message": "User updated", data: user_profile},
+                    status=status.HTTP_200_OK,
+                )
+            except ValueError as error:
+                return Response(
+                    {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
 
         if request.method == "POST":
             try:
@@ -132,12 +148,7 @@ class RosViews(viewsets.ModelViewSet):
     )
     def users(self, request: Request) -> Response:
         """Users endpoint"""
-        connection = routeros_api.RouterOsApiPool(
-            host="172.16.10.1",
-            username="Lantore",
-            password="1",
-            plaintext_login=True,
-        )
+        connection = openConnection(request.data)
         api = connection.get_api()
 
         try:
@@ -160,12 +171,7 @@ def get_user_stats(request: Request) -> Response:
     # Fetch User Statistics
     user_id = request.query_params.get("user_id", None)
 
-    connection = routeros_api.RouterOsApiPool(
-        host="172.16.10.1",  # send this int the request body
-        username="Lantore",  # send this int the request body
-        password="1",  # send this int the request body
-        plaintext_login=True,
-    )
+    connection = openConnection(request.data)
     api = connection.get_api()
 
     try:
@@ -188,12 +194,7 @@ def get_user_stats(request: Request) -> Response:
 def get_active_users(request: Request) -> Response:
     """Fetch Active users"""
 
-    connection = routeros_api.RouterOsApiPool(
-        host="172.16.10.1",  # send this int the request body
-        username="Lantore",  # send this int the request body
-        password="1",  # send this int the request body
-        plaintext_login=True,
-    )
+    connection = openConnection(request.data)
     api = connection.get_api()
 
     try:
@@ -213,12 +214,7 @@ def get_active_users(request: Request) -> Response:
 def disable_user(request: Request) -> Response:
     """Disable user"""
 
-    connection = routeros_api.RouterOsApiPool(
-        host="172.16.10.1",  # send this int the request body
-        username="Lantore",  # send this int the request body
-        password="1",  # send this int the request body
-        plaintext_login=True,
-    )
+    connection = openConnection(request.data)
     api = connection.get_api()
 
     username = request.data["username"]
@@ -240,12 +236,7 @@ def disable_user(request: Request) -> Response:
 def fetch_data_usage(request: Request) -> Response:
     """fetch user data usage"""
 
-    connection = routeros_api.RouterOsApiPool(
-        host="172.16.10.1",  # send this int the request body
-        username="Lantore",  # send this int the request body
-        password="1",  # send this int the request body
-        plaintext_login=True,
-    )
+    connection = openConnection(request.data)
     api = connection.get_api()
 
     userid = request.query_params.get("user_id", None)
@@ -253,11 +244,11 @@ def fetch_data_usage(request: Request) -> Response:
 
     try:
         if userid is None:
-            return Response({"message": "User user_id missing"}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "User user_id missing"}, status=status.HTTP_200_OK
+            )
         # Fetch data usage per day
-        data_usage = api.get_resource("/ip/hotspot/user").get(
-            id=userid, stats="daily"
-        )
+        data_usage = api.get_resource("/ip/hotspot/user").get(id=userid, stats="daily")
 
         # Close the connection
         connection.disconnect()
