@@ -58,7 +58,7 @@ class RosViews(viewsets.ModelViewSet):
                 print(profile)
 
                 api.get_binary_resource("/ip/hotspot/user/profile").set(
-                    name=profile_name, transfer_limit=transfer_limit
+                    name=profile_name.encode(), transfer_limit=transfer_limit.encode()
                 )
 
                 # Close the connection
