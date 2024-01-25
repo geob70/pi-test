@@ -1,6 +1,13 @@
 from django.urls import path
 from ros import views
-from ros.views import get_user_stats, get_active_users, disable_user, fetch_data_usage
+from ros.views import (
+    get_user_connected_devices,
+    get_user_stats,
+    get_active_users,
+    disable_user,
+    fetch_data_usage,
+    user_data_exhaustion,
+)
 
 urlpatterns = [
     path("ros/ping", views.RosViews.as_view({"get": "ping"})),
@@ -10,8 +17,26 @@ urlpatterns = [
         "ros/hotspot-user",
         views.RosViews.as_view({"post": "hotspot_user", "get": "hotspot_user"}),
     ),
+    path(
+        "ros/profile-limitation",
+        views.RosViews.as_view(
+            {"post": "profile_limitation", "get": "profile_limitation"}
+        ),
+    ),
+    path(
+        "ros/user-profile-limitation",
+        views.RosViews.as_view(
+            {"post": "hotspot_user_limitation", "get": "hotspot_user_limitation"}
+        ),
+    ),
     path("ros/user-stats/", get_user_stats, name="user-stats"),
     path("ros/active-users/", get_active_users, name="active-user"),
     path("ros/disable-user/", disable_user, name="disable-user"),
     path("ros/data-usage/", fetch_data_usage, name="fetch_data_usage"),
+    path("ros/data-exhausted/", user_data_exhaustion, name="user_data_exhaustion"),
+    path(
+        "ros/user-connected-devices/",
+        get_user_connected_devices,
+        name="get-user-connected-devices",
+    ),
 ]
