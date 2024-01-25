@@ -51,27 +51,21 @@ class RosViews(viewsets.ModelViewSet):
 
             try:
                 # Add a profile with the desired limitations
-                # profile = api.get_resource("/ip/hotspot/user/profile").add(
-                #     name=profile_name
-                # )
+                profile = api.get_resource("/ip/hotspot/user/profile").add(
+                    name=profile_name
+                )
 
-                parameters = api.get_binary_resource('/ip/hotspot/user/profile').call('getall')
+                print(profile)
 
-                # # Print the list of parameters
-                # for parameter in parameters:
-                #     print(parameter)
-
-                # print(profile)
-
-                # api.get_binary_resource("/ip/hotspot/user/profile").set(
-                #     name=profile_name.encode(), transfer_limit=transfer_limit.encode()
-                # )
+                api.get_binary_resource("/ip/hotspot/user/profile").set(
+                    name=profile_name.encode(), limit_bytes_total=transfer_limit.encode()
+                )
 
                 # Close the connection
                 connection.disconnect()
 
                 return Response(
-                    {"message": "Parameter created successfully", "data": parameters},
+                    {"message": "Profile created successfully", "data": profile},
                     status=status.HTTP_200_OK,
                 )
             except ValueError as error:
