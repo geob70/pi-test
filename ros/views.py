@@ -46,17 +46,15 @@ class RosViews(viewsets.ModelViewSet):
         if request.method == "POST":
             # All fields are in string format
             profile_name = request.data["profile_name"]
-            rate_limit = request.data["rate_limit"]  # e.g 2048000 for 2gb
-            shared_users = request.data["shared_users"]
+            transfer_limit = request.data["transfer_limit"]  # e.g 2048000 for 2gb
+            # shared_users = request.data["shared_users"]
 
             try:
                 # Add a profile with the desired limitations
                 profile = api.get_resource("/ip/hotspot/user/profile").add(
-                    name=profile_name, rate_limit=rate_limit, shared_users=shared_users
+                    name=profile_name,
+                    transfer_limit=transfer_limit,
                 )
-
-                # profile_resource = connection.get_api().get_resource('/tool/user-manager/profile/limitation')
-                # profile_resource.add(name=profile_name, transfer_limit=transfer_limit)
 
                 # Close the connection
                 connection.disconnect()
