@@ -53,7 +53,7 @@ class RosViews(viewsets.ModelViewSet):
                 # Add a profile with the desired limitations
                 profile = api.get_resource("/ip/hotspot/user/profile").add(
                     name="profile_name",
-                    transfer_limit="50G",
+                    rate_limit=transfer_limit,
                 )
 
                 # Close the connection
