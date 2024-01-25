@@ -124,13 +124,13 @@ class RosViews(viewsets.ModelViewSet):
         if request.method == "POST":
             try:
                 # All fields are in string format
-                profile_name = request.data["profile_name"]
+                # profile_name = request.data["profile_name"]
                 password = request.data["password"]
                 user_name = request.data["user_name"]
 
                 # Add a user with the desired profile and limitations
                 user = api.get_resource("/ip/hotspot/user").add(
-                    name=user_name, password=password, profile=profile_name
+                    name=user_name, password=password, limit_bytes_total='10G'
                 )
 
                 # Close the connection
