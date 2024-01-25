@@ -125,8 +125,8 @@ class RosViews(viewsets.ModelViewSet):
             try:
                 # All fields are in string format
                 # profile_name = request.data["profile_name"]
-                password = request.data["password"]
-                user_name = request.data["user_name"]
+                password = request.data["user_password"]
+                user_name = request.data["username"]
 
                 # Add a user with the desired profile and limitations
                 user = api.get_resource("/ip/hotspot/user").add(
