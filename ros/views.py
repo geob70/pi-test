@@ -51,15 +51,13 @@ class RosViews(viewsets.ModelViewSet):
 
             try:
                 # Add a profile with the desired limitations
-                profile = api.get_resource("/ip/hotspot/user/profile").add(
-                    name=profile_name
-                )
+                profile = api.get_resource("/ip/hotspot/user/profile").get()
 
-                print(profile)
+                # print(profile)
 
-                api.get_binary_resource("/ip/hotspot/user/profile").set(
-                    name=profile_name.encode(), transfer_limit=transfer_limit.encode()
-                )
+                # api.get_binary_resource("/ip/hotspot/user/profile").set(
+                #     name=profile_name.encode(), transfer_limit=transfer_limit.encode()
+                # )
 
                 # Close the connection
                 connection.disconnect()
