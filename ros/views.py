@@ -71,7 +71,7 @@ class RosViews(viewsets.ModelViewSet):
                 connection.disconnect()
 
                 return Response(
-                    {"message": "Profile created successfully", "data": parameters},
+                    {"message": "Parameter created successfully", "data": parameters},
                     status=status.HTTP_200_OK,
                 )
             except ValueError as error:
