@@ -304,7 +304,7 @@ def delete_hotspot_user(request: Request) -> Response:
     connection = openConnection(request.data)
     api = connection.get_api()
 
-    user_id = request.data["user_id"]
+    user_id = request.query_params.get("user_id", None)
 
     try:
         # Delete user
