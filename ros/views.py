@@ -138,10 +138,12 @@ class RosViews(viewsets.ModelViewSet):
                 user_name = request.data["username"]
 
                 # Add a user with the desired profile and limitations
-                user = api.get_resource("/ip/hotspot/user").add(
+                api.get_resource("/ip/hotspot/user").add(
                     name=user_name, password=password
                 )
 
+                # Fetch user
+                user = api.get_resource("/ip/hotspot/user").get(name=user_name)[0]
                 # Close the connection
                 connection.disconnect()
 
