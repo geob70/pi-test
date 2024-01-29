@@ -46,19 +46,13 @@ class RosViews(viewsets.ModelViewSet):
         if request.method == "POST":
             # All fields are in string format
             profile_name = request.data["profile_name"]
-            transfer_limit = request.data["transfer_limit"]  # e.g 2048000 for 2gb
+            rate_limit = request.data["rate_limit"]  # e.g 2048000 for 2gb
             # shared_users = request.data["shared_users"]
 
             try:
                 # Add a profile with the desired limitations
                 profile = api.get_resource("/ip/hotspot/user/profile").add(
-                    name=profile_name
-                )
-
-                print(profile)
-
-                api.get_binary_resource("/ip/hotspot/user/profile").set(
-                    name=profile_name.encode(), limit_bytes_total=transfer_limit.encode()
+                    name=profile_name.encode(), rate_limit=rate_limit.encode()
                 )
 
                 # Close the connection
@@ -88,7 +82,7 @@ class RosViews(viewsets.ModelViewSet):
                 )
 
     @action(
-        methods=["POST", "PATCH"],
+        methods=["POST", "PATCH", "DELETE", "GET"],
         detail=False,
         permission_classes=[permissions.AllowAny],
         serializer_class=[],
@@ -101,12 +95,27 @@ class RosViews(viewsets.ModelViewSet):
 
         data = request.data
 
+        if request.method == "DELETE":
+            try:
+                # Delete User
+                user_id = request.query_params.get("user_id", None)
+                users = api.get_resource("/ip/hotspot/user")
+                users.remove(id=user_id)
+                return Response(status=status.HTTP_204_NO_CONTENT)
+
+            except ValueError as error:
+                return Response(
+                    {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+
         if request.method == "PATCH":
             try:
                 # Update User Profile
                 user_profile = api.get_resource("/ip/hotspot/user/profile")
                 user_profile.set(
-                    id=data["user_id"], name=data["name"], rate_limit=data["rate_limit"]
+                    id=data["user_id"],
+                    name=data["name"],
+                    limit_bytes_total=data["limit_bytes_total"],
                 )  # "10M/10M"
 
                 # Close the connection
@@ -130,7 +139,7 @@ class RosViews(viewsets.ModelViewSet):
 
                 # Add a user with the desired profile and limitations
                 user = api.get_resource("/ip/hotspot/user").add(
-                    name=user_name, password=password, limit_bytes_total='10G'
+                    name=user_name, password=password
                 )
 
                 # Close the connection
@@ -138,119 +147,6 @@ class RosViews(viewsets.ModelViewSet):
 
                 return Response(
                     {"message": "user created successfully", "data": user},
-                    status=status.HTTP_200_OK,
-                )
-            except ValueError as error:
-                return Response(
-                    {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-                )
-
-    @action(
-        methods=["POST", "GET"],
-        detail=False,
-        permission_classes=[permissions.AllowAny],
-        serializer_class=[],
-        url_path="profile-limitation",
-    )
-    def profile_limitation(self, request: Request) -> Response:
-        """Hotspot profile"""
-        connection = openConnection(request.data)
-        api = connection.get_api()
-
-        if request.method == "POST":
-            # All fields are in string format
-            profile_name = request.data["profile_name"]
-            transfer_limit = request.data["transfer_limit"]  # e.g 2048000 for 2gb
-
-            try:
-                # Add a profile with the desired limitations
-                profile = connection.get_api().get_resource(
-                    "/tool/user-manager/profile/limitation"
-                )
-                profile.add(name=profile_name, transfer_limit=transfer_limit)
-
-                # Close the connection
-                connection.disconnect()
-
-                return Response(
-                    {"message": "Profile created successfully", "data": profile},
-                    status=status.HTTP_200_OK,
-                )
-            except ValueError as error:
-                return Response(
-                    {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-                )
-
-        if request.method == "GET":
-            try:
-                # Fetch List/Resource
-                list = api.get_resource("/ip/hotspot/user/profile")
-                profiles = list.get()
-
-                # Close the connection
-                connection.disconnect()
-                return Response({"profiles": profiles}, status=status.HTTP_200_OK)
-            except ValueError as error:
-                return Response(
-                    {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-                )
-
-    @action(
-        methods=["POST", "PATCH"],
-        detail=False,
-        permission_classes=[permissions.AllowAny],
-        serializer_class=[],
-        url_path="user-profile-limitation",
-    )
-    def hotspot_user_limitation(self, request: Request) -> Response:
-        """Create a hotspot user profile with limitations"""
-        connection = openConnection(request.data)
-        api = connection.get_api()
-
-        data = request.data
-
-        if request.method == "PATCH":
-            try:
-                # Update User Profile
-                user_profile = api.get_resource("/ip/hotspot/user/profile")
-                user_profile.set(
-                    id=data["user_id"], name=data["name"], rate_limit=data["rate_limit"]
-                )  # "10M/10M"
-
-                # Close the connection
-                connection.disconnect()
-
-                return Response(
-                    {"message": "User updated", data: user_profile},
-                    status=status.HTTP_200_OK,
-                )
-            except ValueError as error:
-                return Response(
-                    {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-                )
-
-        if request.method == "POST":
-            try:
-                # All fields are in string format
-                profile_name = request.data["profile_name"]
-                password = request.data["password"]
-                username = request.data["username"]
-                fullname = request.data["fullname"]
-
-                # Add a user with the desired profile and limitations
-                user_resource = api.get_resource("/tool/user-manager/user")
-                user_resource.add(
-                    username=username,
-                    password=password,
-                    customer=fullname,
-                    profile=profile_name,
-                )
-
-                # Close the connection
-                connection.disconnect()
-
-                return Response(
-                    {"message": "user created successfully", "data": user_resource},
                     status=status.HTTP_200_OK,
                 )
             except ValueError as error:
@@ -372,50 +268,6 @@ def fetch_data_usage(request: Request) -> Response:
         # Close the connection
         connection.disconnect()
         return Response({"data_usage": data_usage}, status=status.HTTP_200_OK)
-    except ValueError as error:
-        return Response(
-            {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
-
-
-@api_view(["POST"])
-def user_data_exhaustion(request: Request) -> Response:
-    """Check if user data is exhausted"""
-
-    connection = openConnection(request.data)
-    api = connection.get_api()
-
-    user_id = request.data["user_id"]
-    limit = request.data["limit"]
-    # print(user_id)
-
-    try:
-        # Get the user's data usage
-        # user_name = 'user_name'
-        user_resource = api.get_resource("/tool/user-manager/user")
-        user_data = user_resource.get(id=user_id)[0]
-        data_used = user_data["bytes-in"] + user_data["bytes-out"]
-        disabled = user_data["disabled"] == "yes"
-
-        data_limit = limit
-
-        # Compare the data used with the data limit
-        if data_used >= data_limit:
-            # Disconnect the user from the network
-            disabled = True
-            user_resource.set(id=user_id, disabled="yes")
-            # print(
-            #     "User {} has exceeded their data limit and has been disconnected from the network.".format(
-            #         user_id
-            #     )
-            # )
-
-        # Close the connection
-        connection.disconnect()
-        return Response(
-            {"data": {"data_used": data_used, "disabled": disabled}},
-            status=status.HTTP_200_OK,
-        )
     except ValueError as error:
         return Response(
             {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
