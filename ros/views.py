@@ -82,7 +82,7 @@ class RosViews(viewsets.ModelViewSet):
                 )
 
     @action(
-        methods=["POST", "PATCH", "DELETE", "GET"],
+        methods=["POST", "PATCH", "GET"],
         detail=False,
         permission_classes=[permissions.AllowAny],
         serializer_class=[],
@@ -94,19 +94,6 @@ class RosViews(viewsets.ModelViewSet):
         api = connection.get_api()
 
         data = request.data
-
-        if request.method == "DELETE":
-            try:
-                # Delete User
-                user_id = request.query_params.get("user_id", None)
-                users = api.get_resource("/ip/hotspot/user")
-                users.remove(id=user_id)
-                return Response(status=status.HTTP_204_NO_CONTENT)
-
-            except ValueError as error:
-                return Response(
-                    {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-                )
 
         if request.method == "PATCH":
             try:
@@ -304,6 +291,28 @@ def get_user_connected_devices(request: Request) -> Response:
         # Close the connection
         connection.disconnect()
         return Response({"user_devices": user_devices}, status=status.HTTP_200_OK)
+    except ValueError as error:
+        return Response(
+            {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(["POST"])
+def delete_hotspot_user(request: Request) -> Response:
+    """Delete hotspot user"""
+
+    connection = openConnection(request.data)
+    api = connection.get_api()
+
+    user_id = request.data["user_id"]
+
+    try:
+        # Delete user
+        api.get_resource("/ip/hotspot/user").remove(id=user_id)
+
+        # Close the connection
+        connection.disconnect()
+        return Response({"message": "User deleted"}, status=status.HTTP_200_OK)
     except ValueError as error:
         return Response(
             {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR

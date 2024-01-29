@@ -1,6 +1,7 @@
 from django.urls import path
 from ros import views
 from ros.views import (
+    delete_hotspot_user,
     get_user_connected_devices,
     get_user_stats,
     get_active_users,
@@ -14,9 +15,8 @@ urlpatterns = [
     path("ros/profile", views.RosViews.as_view({"post": "profile", "get": "profile"})),
     path(
         "ros/hotspot-user",
-        views.RosViews.as_view({"post": "hotspot_user", "delete": "hotspot_user"}),
+        views.RosViews.as_view({"post": "hotspot_user"}),
     ),
-
     path("ros/user-stats/", get_user_stats, name="user-stats"),
     path("ros/active-users/", get_active_users, name="active-user"),
     path("ros/disable-user/", disable_user, name="disable-user"),
@@ -26,4 +26,5 @@ urlpatterns = [
         get_user_connected_devices,
         name="get-user-connected-devices",
     ),
+    path("ros/delete-hotspot-user", delete_hotspot_user, name="delete_hotspot_user"),
 ]
