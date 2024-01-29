@@ -14,7 +14,7 @@ urlpatterns = [
     path("ros/profile", views.RosViews.as_view({"post": "profile", "get": "profile"})),
     path(
         "ros/hotspot-user",
-        views.RosViews.as_view({"post": "hotspot_user", "get": "hotspot_user"}),
+        views.RosViews.as_view({"post": "hotspot_user", "delete": "hotspot_user"}),
     ),
 
     path("ros/user-stats/", get_user_stats, name="user-stats"),
