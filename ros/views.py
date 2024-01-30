@@ -327,12 +327,16 @@ def change_password(request: Request) -> Response:
     api = connection.get_api()
 
     password = request.data["new_password"]
-    user_id = request.data["user_id"]
+    username = request.data["username"]
 
     try:
+        # Get the ID of the user
+        user_id = api.get_binary_resource("/").call(
+            "user/print", {"?name": username.encode()}
+        )[0][".id"]
         # Update the password of the user
         api.get_binary_resource("/").call(
-            "user/set", {"password": "new_password".encode(), ".id": user_id.encode()}
+            "user/set", {"password": password.encode(), ".id": user_id}
         )
 
         # Close the connection
