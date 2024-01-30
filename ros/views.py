@@ -317,3 +317,32 @@ def delete_hotspot_user(request: Request) -> Response:
         return Response(
             {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+
+@api_view(["POST"])
+def change_password(request: Request) -> Response:
+    """Change user password"""
+
+    connection = openConnection(request.data)
+    api = connection.get_api()
+
+    password = request.data["new_password"]
+    user_id = request.data["user_id"]
+
+    try:
+        # Delete user
+        api.get_resource("/ip/hotspot/user").get(id=user_id)
+        # Update User Profile
+        user_profile = api.get_resource("/ip/hotspot/user/profile")
+        user_profile.set(
+            id=user_id,
+            password=password,
+        )
+
+        # Close the connection
+        connection.disconnect()
+        return Response({"message": "Password updated"}, status=status.HTTP_200_OK)
+    except ValueError as error:
+        return Response(
+            {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

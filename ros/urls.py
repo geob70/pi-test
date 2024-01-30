@@ -1,6 +1,7 @@
 from django.urls import path
 from ros import views
 from ros.views import (
+    change_password,
     delete_hotspot_user,
     get_user_connected_devices,
     get_user_stats,
@@ -27,4 +28,5 @@ urlpatterns = [
         name="get-user-connected-devices",
     ),
     path("ros/delete-hotspot-user", delete_hotspot_user, name="delete_hotspot_user"),
+    path("ros/change-user-password", change_password, name="change_password"),
 ]
