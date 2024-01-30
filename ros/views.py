@@ -327,16 +327,15 @@ def change_password(request: Request) -> Response:
     api = connection.get_api()
 
     password = request.data["new_password"]
-    user_id = request.data["user_id"]
+    username = request.data["username"]
 
     try:
-        api.get_resource("/ip/hotspot/user").get(id=user_id).set(password=password)
         # Update User Profile
-        # user_profile = api.get_resource("/ip/hotspot/user/profile")
-        # user_profile.set(
-        #     id=user_id,
-        #     password=password,
-        # )
+        user_profile = api.get_resource("/ip/hotspot/user/profile")
+        user_profile.set(
+            name=username,
+            password=password,
+        )
 
         # Close the connection
         connection.disconnect()
