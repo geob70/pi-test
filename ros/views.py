@@ -335,11 +335,11 @@ def change_password(request: Request) -> Response:
         print(user)
         print(user["id"])
 
-        # user_id = user[".id"]
-        # # Update the password of the user
-        # api.get_binary_resource('/').call(
-        #     'user/set', {'password': password.encode(), '.id': user_id}
-        # )
+        user_id = user["id"]
+        # Update the password of the user
+        api.get_binary_resource('/').call(
+            'user/set', {'password': password.encode(), '.id': user_id}
+        )
 
         # Close the connection
         connection.disconnect()
