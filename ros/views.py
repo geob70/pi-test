@@ -336,7 +336,7 @@ def change_password(request: Request) -> Response:
 
         user_id = user["id"]
         # Update the password of the user
-        user.set(id=user_id, password=password)
+        api.get_resource("/ip/hotspot/user").set(id=user_id, password=password)
 
         # Close the connection
         connection.disconnect()
