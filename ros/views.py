@@ -332,14 +332,13 @@ def change_password(request: Request) -> Response:
     try:
         # Get the ID of the user
         user = api.get_resource("/ip/hotspot/user").get(name=username)[0]
-        print(user)
         print(user["id"].encode())
 
         user_id = user["id"]
-        # Update the password of the user
-        api.get_binary_resource('/').call(
-            'user/set', {'password': password.encode(), 'id': user_id.encode()}
-        )
+        # # Update the password of the user
+        # api.get_binary_resource('/').call(
+        #     'user/set', {'password': password.encode(), 'id': user_id.encode()}
+        # )
 
         # Close the connection
         connection.disconnect()
