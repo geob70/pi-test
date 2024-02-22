@@ -235,7 +235,7 @@ def disable_user(request: Request) -> Response:
         )
 
 
-@api_view(["GET"])
+@api_view(["POST"])
 def check_data_usage(request: Request) -> Response:
     """fetch user data usage"""
 
@@ -254,7 +254,7 @@ def check_data_usage(request: Request) -> Response:
         # Fetch data usage per day
         data_used = int(user["bytes-out"]) + int(user["bytes-in"])
 
-        if data_used > limit:
+        if data_used > int(limit):
             # Disable user
             api.get_resource("/ip/hotspot/user").set(name=username, disabled=True)
             connection.disconnect()
