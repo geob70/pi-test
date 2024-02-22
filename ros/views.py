@@ -260,7 +260,7 @@ def check_data_usage(request: Request) -> Response:
             # user_resource = api.get_resource('/user')
             # user_resource.set(id=user['id'], disabled='yes')
             # api.get_resource("/ip/hotspot/user").set(name=username, disabled="true")
-            api.get_resource("/ip/hotspot/user").set(id=user_id, disabled="yes")
+            api.get_resource("/ip/hotspot/user").set(id=user_id, disabled="no")
             connection.disconnect()
             return Response(
                 {"data_used": data_used, "disabled": True}, status=status.HTTP_200_OK
