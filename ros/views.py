@@ -193,7 +193,7 @@ def get_user_stats(request: Request) -> Response:
         )
 
 
-@api_view(["GET"])
+@api_view(["POST"])
 def get_active_users(request: Request) -> Response:
     """Fetch Active users"""
 
@@ -278,7 +278,7 @@ def check_data_usage(request: Request) -> Response:
         )
 
 
-@api_view(["GET"])
+@api_view(["POST"])
 def get_user_connected_devices(request: Request) -> Response:
     """Fetch user connected devices"""
 
