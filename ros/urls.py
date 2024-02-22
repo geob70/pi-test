@@ -7,7 +7,7 @@ from ros.views import (
     get_user_stats,
     get_active_users,
     disable_user,
-    fetch_data_usage,
+    check_data_usage,
 )
 
 urlpatterns = [
@@ -16,12 +16,12 @@ urlpatterns = [
     path("ros/profile", views.RosViews.as_view({"post": "profile", "get": "profile"})),
     path(
         "ros/hotspot-user",
-        views.RosViews.as_view({"post": "hotspot_user"}),
+        views.RosViews.as_view({"post": "hotspot_user", "patch": "hotspot_user"}),
     ),
     path("ros/user-stats/", get_user_stats, name="user-stats"),
     path("ros/active-users/", get_active_users, name="active-user"),
     path("ros/disable-user/", disable_user, name="disable-user"),
-    path("ros/data-usage/", fetch_data_usage, name="fetch_data_usage"),
+    path("ros/data-usage/", check_data_usage, name="check_data_usage"),
     path(
         "ros/user-connected-devices/",
         get_user_connected_devices,

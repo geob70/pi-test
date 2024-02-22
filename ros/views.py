@@ -102,7 +102,6 @@ class RosViews(viewsets.ModelViewSet):
                 user_profile.set(
                     id=data["user_id"],
                     name=data["name"],
-                    limit_bytes_total=data["limit_bytes_total"],
                 )  # "10M/10M"
 
                 # Close the connection
@@ -225,7 +224,7 @@ def disable_user(request: Request) -> Response:
 
     try:
         # Disable user
-        api.get_resource("/ip/hotspot/user").set(name=username, disabled="yes")
+        api.get_resource("/ip/hotspot/user").set(name=username, disabled=True)
 
         # Close the connection
         connection.disconnect()
@@ -237,26 +236,37 @@ def disable_user(request: Request) -> Response:
 
 
 @api_view(["GET"])
-def fetch_data_usage(request: Request) -> Response:
+def check_data_usage(request: Request) -> Response:
     """fetch user data usage"""
 
     connection = openConnection(request.data)
     api = connection.get_api()
 
-    user_id = request.query_params.get("user_id", None)
-    print(user_id)
+    username = request.data["username"]
+    limit = request.data["limit"]
+    print(username)
 
     try:
-        if user_id is None:
-            return Response(
-                {"message": "User user_id missing"}, status=status.HTTP_200_OK
-            )
+        # Get User
+        user = api.get_resource("/ip/hotspot/user").get(name=username)[0]
+        print(user)
+        user_id = user["id"]
         # Fetch data usage per day
-        data_usage = api.get_resource("/ip/hotspot/user").get(id=user_id, stats="daily")
+        data_used = int(user["bytes-out"]) + int(user["bytes-in"])
+
+        if data_used > limit:
+            # Disable user
+            api.get_resource("/ip/hotspot/user").set(name=username, disabled=True)
+            connection.disconnect()
+            return Response(
+                {"data_used": data_used, "disabled": True}, status=status.HTTP_200_OK
+            )
 
         # Close the connection
         connection.disconnect()
-        return Response({"data_usage": data_usage}, status=status.HTTP_200_OK)
+        return Response(
+            {"data_used": data_used, "disabled": False}, status=status.HTTP_200_OK
+        )
     except ValueError as error:
         return Response(
             {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -332,7 +342,6 @@ def change_password(request: Request) -> Response:
     try:
         # Get the ID of the user
         user = api.get_resource("/ip/hotspot/user").get(name=username)[0]
-        print(user["id"].encode())
 
         user_id = user["id"]
         # Update the password of the user
