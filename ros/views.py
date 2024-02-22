@@ -257,8 +257,8 @@ def check_data_usage(request: Request) -> Response:
             # Disable user
             api.get_resource("/ip/hotspot/user").set(
                 name=username,
-                bytes_in=0,
-                bytes_out=0,
+                bytes_in="0".encode("utf-8"),
+                bytes_out="0".encode("utf-8"),
                 disabled=False,
             )
             connection.disconnect()
