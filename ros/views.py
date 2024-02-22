@@ -251,9 +251,9 @@ def check_data_usage(request: Request) -> Response:
 
     try:
         # Get User
-        user = api.get_resource("/ip/hotspot/active").get(name=username)
-        print(user)
+        user = api.get_resource("/ip/hotspot/user").get(name=username)[0]
         user_id = user["id"]
+        print(user)
 
         # Fetch data usage per day
         data_used = int(user["bytes-out"]) + int(user["bytes-in"])
@@ -271,6 +271,51 @@ def check_data_usage(request: Request) -> Response:
         return Response(
             {"data_used": data_used, "disabled": False}, status=status.HTTP_200_OK
         )
+    except ValueError as error:
+        return Response(
+            {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(["POST"])
+def check_all_active_user_data_usage(request: Request) -> Response:
+    """check all active user data usage"""
+
+    connection = openConnection(request.data)
+    api = connection.get_api()
+
+    limit = request.data["limit"]
+
+    try:
+        # Fetch active users
+        active_users = api.get_resource("/ip/hotspot/active").get()
+        users_data = []
+
+        for user in active_users:
+            # Fetch data usage
+            data_used = int(user["bytes-out"]) + int(user["bytes-in"])
+            if data_used >= int(limit):
+                # Disable user
+                api.get_resource("/ip/hotspot/user").set(id=user["id"], disabled="yes")
+                users_data.append(
+                    {
+                        "data_used": data_used,
+                        "user_name": user["user"],
+                        "disabled": True,
+                    }
+                )
+            else:
+                users_data.append(
+                    {
+                        "data_used": data_used,
+                        "user_name": user["user"],
+                        "disabled": False,
+                    }
+                )
+
+        # Close the connection
+        connection.disconnect()
+        return Response({"users": users_data}, status=status.HTTP_200_OK)
     except ValueError as error:
         return Response(
             {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
