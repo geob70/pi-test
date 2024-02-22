@@ -251,17 +251,16 @@ def check_data_usage(request: Request) -> Response:
 
     try:
         # Get User
-        user = api.get_resource("/ip/hotspot/user").get(name=username)[0]
-        user_id = user["id"]
+        user = api.get_resource("/ip/hotspot/active").get(name=username)[0]
         print(user)
+        user_id = user["id"]
 
         # Fetch data usage per day
         data_used = int(user["bytes-out"]) + int(user["bytes-in"])
 
         if data_used >= int(limit):
             # Disable user
-            # api.get_resource("/ip/hotspot/user").set(id=user_id, disabled="yes")
-            api.get_resource("/ppp/active").set(id=user_id, bytes_in="1234567")
+            api.get_resource("/ip/hotspot/user").set(id=user_id, disabled="yes")
             connection.disconnect()
             return Response(
                 {"data_used": data_used, "disabled": True}, status=status.HTTP_200_OK
