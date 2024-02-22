@@ -21,7 +21,7 @@ urlpatterns = [
     path("ros/user-stats/", get_user_stats, name="user-stats"),
     path("ros/active-users/", get_active_users, name="active-user"),
     path("ros/disable-user/", disable_user, name="disable-user"),
-    path("ros/data-usage/", check_data_usage, name="check_data_usage"),
+    path("ros/data-usage", check_data_usage, name="check_data_usage"),
     path(
         "ros/user-connected-devices/",
         get_user_connected_devices,
