@@ -292,6 +292,7 @@ def check_all_active_user_data_usage(request: Request) -> Response:
         users_data = []
 
         for user in active_users:
+            print(user)
             # Fetch data usage
             data_used = int(user["bytes-out"]) + int(user["bytes-in"])
             if data_used >= int(limit):
@@ -301,6 +302,7 @@ def check_all_active_user_data_usage(request: Request) -> Response:
                     {
                         "data_used": data_used,
                         "user_name": user["user"],
+                        # "uptime": user["uptime"],
                         "disabled": True,
                     }
                 )
