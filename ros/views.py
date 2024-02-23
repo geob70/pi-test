@@ -292,7 +292,6 @@ def check_all_active_user_data_usage(request: Request) -> Response:
         users_data = []
 
         for user in active_users:
-            print(user)
             # Fetch data usage
             data_used = int(user["bytes-out"]) + int(user["bytes-in"])
             if data_used >= int(limit):
@@ -302,7 +301,8 @@ def check_all_active_user_data_usage(request: Request) -> Response:
                     {
                         "data_used": data_used,
                         "user_name": user["user"],
-                        # "uptime": user["uptime"],
+                        "uptime": user["uptime"],
+                        "uptime": user["server"],
                         "disabled": True,
                     }
                 )
@@ -311,13 +311,18 @@ def check_all_active_user_data_usage(request: Request) -> Response:
                     {
                         "data_used": data_used,
                         "user_name": user["user"],
+                        "uptime": user["uptime"],
+                        "uptime": user["server"],
                         "disabled": False,
                     }
                 )
 
         # Close the connection
         connection.disconnect()
-        return Response({"users": users_data}, status=status.HTTP_200_OK)
+        return Response(
+            {"users": users_data, "active_users": len(users_data)},
+            status=status.HTTP_200_OK,
+        )
     except ValueError as error:
         return Response(
             {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
