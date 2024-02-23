@@ -8,7 +8,7 @@ import routeros_api
 def openConnection(data):
     connection = routeros_api.RouterOsApiPool(
         host=data["host"],  # "172.16.10.1"
-        username=data["name"],  # "Lantore"
+        username=data["hostname"],  # "Lantore"
         password=data["password"],  # "1"
         plaintext_login=True,
     )
@@ -98,9 +98,10 @@ class RosViews(viewsets.ModelViewSet):
         if request.method == "PATCH":
             try:
                 # Update User Profile
-                user_profile = api.get_resource("/ip/hotspot/user/profile")
+                user_profile = api.get_resource("/ip/hotspot/user").get(
+                    id=data["user_id"]
+                )
                 user_profile.set(
-                    id=data["user_id"],
                     name=data["name"],
                 )  # "10M/10M"
 
