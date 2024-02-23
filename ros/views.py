@@ -97,22 +97,21 @@ class RosViews(viewsets.ModelViewSet):
 
         if request.method == "PATCH":
             try:
-               # Find the user resource
-                user_resource = api.get_resource('/user')
+                # Get the ID of the user
+                user = api.get_resource("/ip/hotspot/user").get(
+                    name=data["old_username"]
+                )[0]
 
-                # Get the user details based on the existing username
-                user_details = user_resource.get(name=data["old_username"])
-
-                # Update the username
-                user_details.set(name=data["new_username"])
-
-                # Commit the changes
-                user_details.update()
+                user_id = user["id"]
+                # Update the password of the user
+                api.get_resource("/ip/hotspot/user").set(
+                    id=user_id, name=data["new_username"]
+                )
                 # Close the connection
                 connection.disconnect()
 
                 return Response(
-                    {"message": "User updated", data: user_details},
+                    {"message": "User updated"},
                     status=status.HTTP_200_OK,
                 )
             except ValueError as error:
