@@ -302,7 +302,7 @@ def check_all_active_user_data_usage(request: Request) -> Response:
                         "data_used": data_used,
                         "user_name": user["user"],
                         "uptime": user["uptime"],
-                        "uptime": user["server"],
+                        "server": user["server"],
                         "disabled": True,
                     }
                 )
@@ -312,7 +312,7 @@ def check_all_active_user_data_usage(request: Request) -> Response:
                         "data_used": data_used,
                         "user_name": user["user"],
                         "uptime": user["uptime"],
-                        "uptime": user["server"],
+                        "server": user["server"],
                         "disabled": False,
                     }
                 )
