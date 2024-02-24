@@ -287,8 +287,6 @@ def check_all_active_user_data_usage(request: Request) -> Response:
     connection = openConnection(request.data)
     api = connection.get_api()
 
-    limit = request.data["limit"]
-
     try:
         # Fetch active users
         active_users = api.get_resource("/ip/hotspot/active").get()
@@ -297,28 +295,14 @@ def check_all_active_user_data_usage(request: Request) -> Response:
         for user in active_users:
             # Fetch data usage
             data_used = int(user["bytes-out"]) + int(user["bytes-in"])
-            if data_used >= int(limit):
-                # Disable user
-                api.get_resource("/ip/hotspot/user").set(id=user["id"], disabled="yes")
-                users_data.append(
-                    {
-                        "data_used": data_used,
-                        "user_name": user["user"],
-                        "uptime": user["uptime"],
-                        "server": user["server"],
-                        "disabled": True,
-                    }
-                )
-            else:
-                users_data.append(
-                    {
-                        "data_used": data_used,
-                        "user_name": user["user"],
-                        "uptime": user["uptime"],
-                        "server": user["server"],
-                        "disabled": False,
-                    }
-                )
+            users_data.append(
+                {
+                    "data_used": data_used,
+                    "user_name": user["user"],
+                    "uptime": user["uptime"],
+                    "server": user["server"],
+                }
+            )
 
         # Close the connection
         connection.disconnect()
