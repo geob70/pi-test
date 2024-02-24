@@ -2,7 +2,7 @@ from django.urls import path
 from ros import views
 from ros.views import (
     change_password,
-    check_all_active_user_data_usage,
+    # check_all_active_user_data_usage,
     delete_hotspot_user,
     get_user_connected_devices,
     get_user_stats,
@@ -30,9 +30,17 @@ urlpatterns = [
     ),
     path("ros/delete-hotspot-user", delete_hotspot_user, name="delete_hotspot_user"),
     path("ros/change-user-password", change_password, name="change_password"),
+    # path(
+    #     "ros/check-all-active-users-usage",
+    #     check_all_active_user_data_usage,
+    #     name="check_all_active_users_usage",
+    # ),
     path(
         "ros/check-all-active-users-usage",
-        check_all_active_user_data_usage,
-        name="check_all_active_users_usage",
+        views.RosViews.as_view(
+            {
+                "post": "check_all_active_user_data_usage",
+            }
+        ),
     ),
 ]
