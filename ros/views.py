@@ -200,11 +200,10 @@ class RosViews(viewsets.ModelViewSet):
                         "server": user["server"],
                     }
                 )
-            print(len(users_data))
             # Close the connection
             connection.disconnect()
             return Response(
-                {"users": users_data, "active_users": len(users_data)},
+                {"active_users": len(users_data)},
                 status=status.HTTP_200_OK,
             )
         except ValueError as error:
