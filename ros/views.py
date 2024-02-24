@@ -203,7 +203,7 @@ class RosViews(viewsets.ModelViewSet):
             # Close the connection
             connection.disconnect()
             return Response(
-                {"active_users": len(users_data)},
+                {"users": users_data, "active_users": len(users_data)},
                 status=status.HTTP_200_OK,
             )
         except ValueError as error:
