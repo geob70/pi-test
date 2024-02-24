@@ -178,7 +178,7 @@ class RosViews(viewsets.ModelViewSet):
         serializer_class=[],
         url_path="data-usage",
     )
-    def check_all_active_user_data_usage(request: Request) -> Response:
+    def check_all_active_user_data_usage(self, request: Request) -> Response:
         """check all active user data usage"""
 
         connection = openConnection(request.data)
