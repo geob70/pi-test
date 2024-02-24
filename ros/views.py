@@ -200,7 +200,7 @@ class RosViews(viewsets.ModelViewSet):
                         "server": user["server"],
                     }
                 )
-
+            print(len(users_data))
             # Close the connection
             connection.disconnect()
             return Response(
