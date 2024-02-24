@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import status, permissions, viewsets
@@ -178,7 +179,7 @@ class RosViews(viewsets.ModelViewSet):
         serializer_class=[],
         url_path="data-usage",
     )
-    def check_all_active_user_data_usage(self, request: Request) -> Response:
+    def check_all_active_user_data_usage(self, request: Request) -> HttpResponse:
         """check all active user data usage"""
 
         connection = openConnection(request.data)
