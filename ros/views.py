@@ -365,12 +365,12 @@ def get_user_connected_devices(request: Request) -> Response:
     connection = openConnection(request.data)
     api = connection.get_api()
 
-    user_id = request.query_params.get("user_id", None)
+    user_name = request.query_params.get("user_name", None)
 
     try:
         # Fetch user connected devices
-        print(user_id)
-        user_devices = api.get_resource("/ip/hotspot/active").get()
+        print(user_name)
+        user_devices = api.get_resource("/ip/hotspot/active").get(user=user_name)
         print(user_devices)
 
         # # Get the IP address of the user
