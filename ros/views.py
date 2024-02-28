@@ -134,6 +134,7 @@ class RosViews(viewsets.ModelViewSet):
 
                 # Fetch user
                 user = api.get_resource("/ip/hotspot/user").get(name=user_name)[0]
+                api.get_resource("/ip/hotspot/user").set(id=user["id"], disabled="yes")
                 # Close the connection
                 connection.disconnect()
 
@@ -174,7 +175,7 @@ class RosViews(viewsets.ModelViewSet):
 
     @action(
         methods=["POST"],
-        detail=False,
+        detail=True,
         permission_classes=[permissions.AllowAny],
         serializer_class=[],
         url_path="data-usage",
@@ -211,6 +212,7 @@ class RosViews(viewsets.ModelViewSet):
             return Response(
                 {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
 
 @api_view(["GET"])
 def get_user_stats(request: Request) -> Response:
@@ -367,19 +369,19 @@ def get_user_connected_devices(request: Request) -> Response:
 
     try:
         # Fetch user connected devices
-        # user_devices = api.get_resource("/ip/hotspot/active").get(user=user_id)
+        user_devices = api.get_resource("/ip/hotspot/active").get(user=user_id)
 
-        # Get the IP address of the user
-        user_resource = api.get_resource("/tool/user-manager/user")
-        user_data = user_resource.get(id=user_id)[0]
-        user_ip = user_data["ip-address"]
+        # # Get the IP address of the user
+        # user_resource = api.get_resource("/tool/user-manager/user")
+        # user_data = user_resource.get(id=user_id)[0]
+        # user_ip = user_data["ip-address"]
 
-        # Get the MAC addresses of devices connected to the router
-        arp_resource = api.get_resource("/ip/arp")
-        arp_data = arp_resource.get()
-        user_devices = [
-            entry["mac-address"] for entry in arp_data if entry["address"] == user_ip
-        ]
+        # # Get the MAC addresses of devices connected to the router
+        # arp_resource = api.get_resource("/ip/arp")
+        # arp_data = arp_resource.get()
+        # user_devices = [
+        #     entry["mac-address"] for entry in arp_data if entry["address"] == user_ip
+        # ]
 
         # Close the connection
         connection.disconnect()
