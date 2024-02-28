@@ -369,25 +369,27 @@ def get_user_connected_devices(request: Request) -> Response:
 
     try:
         # Fetch user connected devices
-        print(user_name)
         user_devices = api.get_resource("/ip/hotspot/active").get(user=user_name)
-        print(user_devices)
 
         # # Get the IP address of the user
         # user_resource = api.get_resource("/tool/user-manager/user")
         # user_data = user_resource.get(id=user_id)[0]
         # user_ip = user_data["ip-address"]
 
-        # # Get the MAC addresses of devices connected to the router
-        # arp_resource = api.get_resource("/ip/arp")
-        # arp_data = arp_resource.get()
+        # Get the MAC addresses of devices connected to the router
+        arp_resource = api.get_resource("/ip/arp")
+        arp_data = arp_resource.get()
+
+        # print(arp_data)
         # user_devices = [
         #     entry["mac-address"] for entry in arp_data if entry["address"] == user_ip
         # ]
 
         # Close the connection
         connection.disconnect()
-        return Response({"user_devices": user_devices}, status=status.HTTP_200_OK)
+        return Response(
+            {"user_devices": user_devices, "arp": arp_data}, status=status.HTTP_200_OK
+        )
     except ValueError as error:
         return Response(
             {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
