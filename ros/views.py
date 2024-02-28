@@ -377,8 +377,8 @@ def get_user_connected_devices(request: Request) -> Response:
         # user_ip = user_data["ip-address"]
 
         # Get the MAC addresses of devices connected to the router
-        arp_resource = api.get_resource("/ip/arp")
-        arp_data = arp_resource.get()
+        # arp_resource = api.get_resource("/ip/arp")
+        # arp_data = arp_resource.get()
 
         # print(arp_data)
         # user_devices = [
@@ -388,7 +388,10 @@ def get_user_connected_devices(request: Request) -> Response:
         # Close the connection
         connection.disconnect()
         return Response(
-            {"user_devices": user_devices, "arp": arp_data}, status=status.HTTP_200_OK
+            {
+                "user_devices": user_devices,
+            },
+            status=status.HTTP_200_OK,
         )
     except ValueError as error:
         return Response(
