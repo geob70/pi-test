@@ -369,7 +369,9 @@ def get_user_connected_devices(request: Request) -> Response:
 
     try:
         # Fetch user connected devices
+        print(user_id)
         user_devices = api.get_resource("/ip/hotspot/active").get(id=user_id)
+        print(user_devices)
 
         # # Get the IP address of the user
         # user_resource = api.get_resource("/tool/user-manager/user")
