@@ -292,13 +292,11 @@ def check_data_usage(request: Request) -> Response:
 
     username = request.data["username"]
     limit = request.data["limit"]
-    print(username)
 
     try:
         # Get User
         user = api.get_resource("/ip/hotspot/user").get(name=username)[0]
         user_id = user["id"]
-        print(user)
 
         # Fetch data usage per day
         data_used = int(user["bytes-out"]) + int(user["bytes-in"])
