@@ -9,6 +9,7 @@ from ros.views import (
     get_active_users,
     disable_user,
     check_data_usage,
+    set_data_limit,
 )
 
 urlpatterns = [
@@ -30,6 +31,7 @@ urlpatterns = [
     ),
     path("ros/delete-hotspot-user", delete_hotspot_user, name="delete_hotspot_user"),
     path("ros/change-user-password", change_password, name="change_password"),
+    path("ros/set-data-usage", set_data_limit, name="set_data_limit"),
     # path(
     #     "ros/check-all-active-users-usage",
     #     check_all_active_user_data_usage,

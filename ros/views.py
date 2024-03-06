@@ -129,7 +129,9 @@ class RosViews(viewsets.ModelViewSet):
 
                 # Add a user with the desired profile and limitations
                 api.get_resource("/ip/hotspot/user").add(
-                    name=user_name, password=password
+                    name=user_name,
+                    password=password,
+                    limit_bytes_total=0,
                 )
 
                 # Fetch user
@@ -441,6 +443,35 @@ def change_password(request: Request) -> Response:
         # Close the connection
         connection.disconnect()
         return Response({"message": "Password updated"}, status=status.HTTP_200_OK)
+    except ValueError as error:
+        return Response(
+            {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(["POST"])
+def set_data_limit(request: Request) -> Response:
+    """Set data limit for user"""
+
+    connection = openConnection(request.data)
+    api = connection.get_api()
+
+    limit_bytes_total = request.data["limit_bytes_total"]
+    username = request.data["username"]
+
+    try:
+        # Get the ID of the user
+        user = api.get_resource("/ip/hotspot/user").get(name=username)[0]
+
+        user_id = user["id"]
+        # Update the password of the user
+        api.get_resource("/ip/hotspot/user").set(
+            id=user_id, limit_bytes_total=limit_bytes_total
+        )
+
+        # Close the connection
+        connection.disconnect()
+        return Response({"message": "Data limit updated"}, status=status.HTTP_200_OK)
     except ValueError as error:
         return Response(
             {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
