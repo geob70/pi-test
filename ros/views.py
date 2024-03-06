@@ -131,7 +131,7 @@ class RosViews(viewsets.ModelViewSet):
                 api.get_resource("/ip/hotspot/user").add(
                     name=user_name,
                     password=password,
-                    limit_bytes_total=0,
+                    limit_bytes_total="0",
                 )
 
                 # Fetch user
