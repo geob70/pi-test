@@ -275,7 +275,7 @@ def disable_user(request: Request) -> Response:
         user = api.get_resource("/ip/hotspot/user").get(name=username)[0]
         user_id = user["id"]
         # Disable user
-        api.get_resource("/ip/hotspot/user").set(id=user_id, disabled=is_disabled)
+        api.get_resource("/ip/hotspot/user").set(disabled=is_disabled)
 
         # Close the connection
         connection.disconnect()
