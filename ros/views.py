@@ -476,3 +476,25 @@ def set_data_limit(request: Request) -> Response:
         return Response(
             {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+
+@api_view(["POST"])
+def remove_device(request: Request) -> Response:
+    """Remove device from hotspot"""
+
+    connection = openConnection(request.data)
+    api = connection.get_api()
+
+    mac_address = request.data["mac_address"]
+
+    try:
+        # Remove device
+        api.get_resource("/ip/hotspot/active").remove(mac_address=mac_address)
+
+        # Close the connection
+        connection.disconnect()
+        return Response({"message": "Device removed"}, status=status.HTTP_200_OK)
+    except ValueError as error:
+        return Response(
+            {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

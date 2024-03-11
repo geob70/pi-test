@@ -9,6 +9,7 @@ from ros.views import (
     get_active_users,
     disable_user,
     check_data_usage,
+    remove_device,
     set_data_limit,
 )
 
@@ -32,11 +33,6 @@ urlpatterns = [
     path("ros/delete-hotspot-user", delete_hotspot_user, name="delete_hotspot_user"),
     path("ros/change-user-password", change_password, name="change_password"),
     path("ros/set-data-limit", set_data_limit, name="set_data_limit"),
-    # path(
-    #     "ros/check-all-active-users-usage",
-    #     check_all_active_user_data_usage,
-    #     name="check_all_active_users_usage",
-    # ),
     path(
         "ros/check-all-active-users-usage",
         views.RosViews.as_view(
@@ -45,4 +41,5 @@ urlpatterns = [
             }
         ),
     ),
+    path("ros/remove-device", remove_device, name="remove_device"),
 ]
