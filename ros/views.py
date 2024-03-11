@@ -194,6 +194,7 @@ class RosViews(viewsets.ModelViewSet):
             users_data = []
 
             for user in active_users:
+                print(user)
                 # Fetch data usage
                 data_used = int(user["bytes-out"]) + int(user["bytes-in"])
                 users_data.append(
@@ -202,6 +203,7 @@ class RosViews(viewsets.ModelViewSet):
                         "user_name": user["user"],
                         "uptime": user["uptime"],
                         "server": user["server"],
+                        "mac_address": user["mac-address"],
                     }
                 )
             # Close the connection
@@ -321,45 +323,6 @@ def check_data_usage(request: Request) -> Response:
         return Response(
             {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
-
-
-@api_view(["POST"])
-def check_all_active_user_data_usage(request: Request) -> Response:
-    """check all active user data usage"""
-
-    connection = openConnection(request.data)
-    api = connection.get_api()
-
-    try:
-        # Fetch active users
-        active_users = api.get_resource("/ip/hotspot/active").get()
-        users_data = []
-
-        for user in active_users:
-            print(user)
-            # Fetch data usage
-            data_used = int(user["bytes-out"]) + int(user["bytes-in"])
-            users_data.append(
-                # {
-                #     "data_used": data_used,
-                #     "user_name": user["user"],
-                #     "uptime": user["uptime"],
-                #     "server": user["server"],
-                #     "mac_address": user["mac-address"],
-                # }
-            )
-
-        # Close the connection
-        connection.disconnect()
-        return Response(
-            {"users": users_data, "active_users": len(users_data)},
-            status=status.HTTP_200_OK,
-        )
-    except ValueError as error:
-        return Response(
-            {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
-
 
 @api_view(["POST"])
 def get_user_connected_devices(request: Request) -> Response:
