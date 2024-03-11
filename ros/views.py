@@ -336,6 +336,7 @@ def check_all_active_user_data_usage(request: Request) -> Response:
         users_data = []
 
         for user in active_users:
+            print(user)
             # Fetch data usage
             data_used = int(user["bytes-out"]) + int(user["bytes-in"])
             users_data.append(
