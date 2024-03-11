@@ -344,6 +344,7 @@ def check_all_active_user_data_usage(request: Request) -> Response:
                     "user_name": user["user"],
                     "uptime": user["uptime"],
                     "server": user["server"],
+                    "mac_address": user["mac-address"],
                 }
             )
 
