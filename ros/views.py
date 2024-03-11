@@ -459,7 +459,7 @@ def remove_device(request: Request) -> Response:
         # Remove the session if found
         if result:
             print(result)
-            # api.get_resource("/ip/hotspot/active").remove(id=result[0][".id"])
+            api.get_resource("/ip/hotspot/active").remove(id=result[0]["id"])
             print(f"User session with MAC address {mac_address} removed successfully.")
         else:
             print(f"No active session found for MAC address {mac_address}.")
