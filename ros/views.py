@@ -324,6 +324,7 @@ def check_data_usage(request: Request) -> Response:
             {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
+
 @api_view(["POST"])
 def get_user_connected_devices(request: Request) -> Response:
     """Fetch user connected devices"""
@@ -450,11 +451,17 @@ def remove_device(request: Request) -> Response:
     connection = openConnection(request.data)
     api = connection.get_api()
 
-    address = request.data["address"]
+    mac_address = request.data["mac_address"]
 
     try:
-        # Remove device
-        api.get_resource("/ip/hotspot/active").remove(address=address)
+        result = api.get_resource("/ip/hotspot/active").get(mac_address=mac_address)
+
+        # Remove the session if found
+        if result:
+            api.get_resource("/ip/hotspot/active").remove(id=result[0][".id"])
+            print(f"User session with MAC address {mac_address} removed successfully.")
+        else:
+            print(f"No active session found for MAC address {mac_address}.")
 
         # Close the connection
         connection.disconnect()
