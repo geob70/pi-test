@@ -194,7 +194,6 @@ class RosViews(viewsets.ModelViewSet):
             users_data = []
 
             for user in active_users:
-                print(user)
                 # Fetch data usage
                 data_used = int(user["bytes-out"]) + int(user["bytes-in"])
                 users_data.append(
@@ -450,11 +449,11 @@ def remove_device(request: Request) -> Response:
     connection = openConnection(request.data)
     api = connection.get_api()
 
-    mac_address = request.data["mac_address"]
+    address = request.data["address"]
 
     try:
         # Remove device
-        api.get_resource("/ip/hotspot/active").remove(mac_address=mac_address)
+        api.get_resource("/ip/hotspot/active").remove(address=address)
 
         # Close the connection
         connection.disconnect()
