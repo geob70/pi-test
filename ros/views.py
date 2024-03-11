@@ -340,13 +340,13 @@ def check_all_active_user_data_usage(request: Request) -> Response:
             # Fetch data usage
             data_used = int(user["bytes-out"]) + int(user["bytes-in"])
             users_data.append(
-                {
-                    "data_used": data_used,
-                    "user_name": user["user"],
-                    "uptime": user["uptime"],
-                    "server": user["server"],
-                    "mac_address": user["mac-address"],
-                }
+                # {
+                #     "data_used": data_used,
+                #     "user_name": user["user"],
+                #     "uptime": user["uptime"],
+                #     "server": user["server"],
+                #     "mac_address": user["mac-address"],
+                # }
             )
 
         # Close the connection
