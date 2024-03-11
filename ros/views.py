@@ -460,13 +460,13 @@ def remove_device(request: Request) -> Response:
         if result:
             print(result)
             api.get_resource("/ip/hotspot/active").remove(id=result[0]["id"])
-            print(f"User session with MAC address {mac_address} removed successfully.")
-        else:
-            print(f"No active session found for MAC address {mac_address}.")
+            # Close the connection
+            connection.disconnect()
+            return Response({"message": "Device removed"}, status=status.HTTP_200_OK)
 
         # Close the connection
         connection.disconnect()
-        return Response({"message": "Device removed"}, status=status.HTTP_200_OK)
+        return Response({"message": "No Device found"}, status=status.HTTP_200_OK)
     except ValueError as error:
         return Response(
             {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
