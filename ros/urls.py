@@ -14,7 +14,7 @@ from ros.views import (
 
 urlpatterns = [
     path("ros/ping", views.RosViews.as_view({"get": "ping"})),
-    path("ros/users", views.RosViews.as_view({"get": "users"})),
+    path("ros/users", views.RosViews.as_view({"post": "users"})),
     path("ros/profile", views.RosViews.as_view({"post": "profile", "get": "profile"})),
     path(
         "ros/hotspot-user",
