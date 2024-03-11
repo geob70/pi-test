@@ -203,6 +203,7 @@ class RosViews(viewsets.ModelViewSet):
                         "uptime": user["uptime"],
                         "server": user["server"],
                         "mac_address": user["mac-address"],
+                        "address": user["address"],
                     }
                 )
             # Close the connection
