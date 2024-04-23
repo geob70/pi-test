@@ -273,19 +273,8 @@ def disable_user(request: Request) -> Response:
     is_disabled = request.data["is_disabled"]
 
     try:
-        # Get User
-        # user = api.get_resource("/ip/hotspot/user").get(name=username)[0]
-        # user_id = user["id"]
-        # # Disable user
-        # api.get_resource("/ip/hotspot/user").set(disabled=is_disabled)
-        user_profile_resource = api.get_resource("/ip/hotspot/user/profile")
-        profile_name_to_disable = username
-        profile = user_profile_resource.get(name=profile_name_to_disable)
-
-        if is_disabled == "yes":
-            profile.set(disabled=True)
-        else:
-            profile.set(disabled=False)
+        user = api.get_resource("/ip/hotspot/user").get(name=username)[0]
+        api.get_resource("/ip/hotspot/user").set(id=user["id"], disabled=is_disabled)
 
         # Close the connection
         connection.disconnect()
