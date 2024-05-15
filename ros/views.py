@@ -467,3 +467,30 @@ def remove_device(request: Request) -> Response:
         return Response(
             {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+
+@api_view(["POST"])
+def assign_profile(request: Request) -> Response:
+    """Assign profile to user"""
+
+    connection = openConnection(request.data)
+    api = connection.get_api()
+
+    profile_name = request.data["profile_name"]
+    username = request.data["username"]
+
+    try:
+        # Get the ID of the user
+        user = api.get_resource("/ip/hotspot/user").get(name=username)[0]
+
+        user_id = user["id"]
+        # Update the password of the user
+        api.get_resource("/ip/hotspot/user").set(id=user_id, profile=profile_name)
+
+        # Close the connection
+        connection.disconnect()
+        return Response({"message": "Profile assigned"}, status=status.HTTP_200_OK)
+    except ValueError as error:
+        return Response(
+            {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

@@ -1,6 +1,7 @@
 from django.urls import path
 from ros import views
 from ros.views import (
+    assign_profile,
     change_password,
     # check_all_active_user_data_usage,
     delete_hotspot_user,
@@ -42,4 +43,5 @@ urlpatterns = [
         ),
     ),
     path("ros/remove-device", remove_device, name="remove_device"),
+    path("ros/assign-profile", assign_profile, name="assign_profile"),
 ]
