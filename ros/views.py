@@ -232,7 +232,8 @@ def get_user_data(request: Request) -> Response:
         # Close the connection
         connection.disconnect()
         return Response(
-            {"message": "User data fetched", user: user}, status=status.HTTP_200_OK
+            {"message": "User data fetched", "user": dict(user)},
+            status=status.HTTP_200_OK,
         )
     except ValueError as error:
         return Response(
