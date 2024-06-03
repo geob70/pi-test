@@ -219,23 +219,21 @@ class RosViews(viewsets.ModelViewSet):
 
 
 @api_view(["GET"])
-def get_user_stats(request: Request) -> Response:
+def get_user_data(request: Request) -> Response:
     # Fetch User Statistics
-    user_id = request.query_params.get("user_id", None)
-
     connection = openConnection(request.data)
     api = connection.get_api()
 
-    try:
-        user = api.get_resource("/ip/hotspot/user")
+    username = request.data["username"]
 
-        # Fetch user stats
-        stats = user.get(id=user_id)
+    try:
+        user = api.get_resource("/ip/hotspot/user").get(name=username)[0]
 
         # Close the connection
         connection.disconnect()
-
-        return Response({"stats": stats}, status=status.HTTP_200_OK)
+        return Response(
+            {"message": "User data fetched", user: user}, status=status.HTTP_200_OK
+        )
     except ValueError as error:
         return Response(
             {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
