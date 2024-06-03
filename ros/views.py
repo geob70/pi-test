@@ -218,7 +218,7 @@ class RosViews(viewsets.ModelViewSet):
             )
 
 
-@api_view(["GET"])
+@api_view(["POST"])
 def get_user_data(request: Request) -> Response:
     # Fetch User Statistics
     connection = openConnection(request.data)
