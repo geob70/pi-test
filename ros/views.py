@@ -7,13 +7,11 @@ import routeros_api
 
 
 def openConnection(data):
-    plain_text_login = data["plaintext_login"] == True
-    print("LOGIN::::", plain_text_login)
     connection = routeros_api.RouterOsApiPool(
         host=data["host"],  # "172.16.10.1"
         username=data["hostname"],  # "Lantore"
         password=data["password"],  # "1"
-        plaintext_login=plain_text_login,
+        plaintext_login=True,
     )
     return connection
 
