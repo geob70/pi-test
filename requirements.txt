@@ -1,6 +1,6 @@
 asgiref
 Django
-django-cors-header
+django-cors-headers==4.4.0
 djangorestframework
 pytz
 RouterOS-api
