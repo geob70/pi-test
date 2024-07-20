@@ -1,7 +1,9 @@
 asgiref
 Django
+django-cors-header
 djangorestframework
 pytz
 RouterOS-api
+six
 sqlparse
 typing_extensions
