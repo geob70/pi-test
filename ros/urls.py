@@ -5,6 +5,7 @@ from ros.views import (
     change_password,
     # check_all_active_user_data_usage,
     delete_hotspot_user,
+    delete_hotspot_user_by_name,
     get_user_connected_devices,
     get_user_data,
     get_active_users,
@@ -44,4 +45,5 @@ urlpatterns = [
     ),
     path("ros/remove-device", remove_device, name="remove_device"),
     path("ros/assign-profile", assign_profile, name="assign_profile"),
+    path("ros/delete-user", delete_hotspot_user_by_name, name="delete_user"),
 ]

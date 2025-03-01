@@ -370,9 +370,35 @@ def delete_hotspot_user(request: Request) -> Response:
     api = connection.get_api()
 
     user_id = request.query_params.get("user_id", None)
+    username = request.data["username"]
+    user = api.get_resource("/ip/hotspot/user").get(name=username)[0]
 
     try:
         # Delete user
+        api.get_resource("/ip/hotspot/user").remove(id=user_id)
+
+        # Close the connection
+        connection.disconnect()
+        return Response({"message": "User deleted"}, status=status.HTTP_200_OK)
+    except ValueError as error:
+        return Response(
+            {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(["POST"])
+def delete_hotspot_user_by_name(request: Request) -> Response:
+    """Delete hotspot user"""
+
+    connection = openConnection(request.data)
+    api = connection.get_api()
+
+    username = request.data["username"]
+
+    try:
+        # Delete user
+        user = api.get_resource("/ip/hotspot/user").get(name=username)[0]
+        user_id = user['id']
         api.get_resource("/ip/hotspot/user").remove(id=user_id)
 
         # Close the connection
