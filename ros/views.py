@@ -451,20 +451,26 @@ def reset_data_usage(request: Request) -> Response:
     # user_id = user["id"]
     # Reset the data usage of the user
     try:
-        # Find the queue by username (assuming the queue name is based on the username)
-        queues = api.get_resource("/queue/simple")
-        queue = queues.get(name=username)
+        hotspot_users = api.get_resource("/ip/hotspot/user")
+        user = hotspot_users.get(name=username)
 
-        if queue:
+        if user:
             # Reset bytes in/out to zero
-            queue[0].set(bytes="0/0")
+            user[0].set(bytes=0)
             return Response({"message": "reset complete"}, status=status.HTTP_200_OK)
-        else:
+
+        # Check if the user exists in PPP secrets
+        ppp_users = api.get_resource("/ppp/secret")
+        user = ppp_users.get(name=username)
+
+        if user:
+            # Reset bytes in/out to zero
+            user[0].set(bytes=0)
             return Response(
-                {"message": "reset failed:::no_user", "queues": queues.get()},
-                status=status.HTTP_200_OK,
+                {"message": "reset complete on ppp_users"}, status=status.HTTP_200_OK
             )
 
+        return Response({"message": "reset not found"}, status=status.HTTP_200_OK)
     except ValueError as error:
         return Response(
             {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
