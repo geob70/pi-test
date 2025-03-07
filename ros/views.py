@@ -454,10 +454,10 @@ def reset_data_usage(request: Request) -> Response:
         hotspot_users = api.get_resource("/ip/hotspot/user")
         user = hotspot_users.get(name=username)
 
-        if user:
-            # Reset bytes in/out to zero
-            user[0].set(bytes=0)
-            return Response({"message": "reset complete"}, status=status.HTTP_200_OK)
+        # if user:
+        #     # Reset bytes in/out to zero
+        #     user[0].set(bytes=0)
+        #     return Response({"message": "reset complete"}, status=status.HTTP_200_OK)
 
         # Check if the user exists in PPP secrets
         ppp_users = api.get_resource("/ppp/secret")
