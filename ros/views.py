@@ -461,7 +461,8 @@ def reset_data_usage(request: Request) -> Response:
             return Response({"message": "reset complete"}, status=status.HTTP_200_OK)
         else:
             return Response(
-                {"message": "reset failed:::no_user"}, status=status.HTTP_200_OK
+                {"message": "reset failed:::no_user", "queues": queues.get()},
+                status=status.HTTP_200_OK,
             )
 
     except ValueError as error:
