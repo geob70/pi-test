@@ -455,7 +455,7 @@ def reset_data_usage(request: Request) -> Response:
         # Update the password of the user
         api.get_resource("/ip/hotspot/user").set(
             **{
-                ".id": user[0][".id"],
+                ".id": user_id,
                 "bytes-in": "0",  # Reset bytes-in to 0
                 "bytes-out": "0",  # Reset bytes-out to 0
             }
