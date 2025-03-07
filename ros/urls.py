@@ -12,6 +12,7 @@ from ros.views import (
     disable_user,
     check_data_usage,
     remove_device,
+    reset_data_usage,
     set_data_limit,
 )
 
@@ -46,4 +47,5 @@ urlpatterns = [
     path("ros/remove-device", remove_device, name="remove_device"),
     path("ros/assign-profile", assign_profile, name="assign_profile"),
     path("ros/delete-user", delete_hotspot_user_by_name, name="delete_user"),
+    path("ros/reset-data", reset_data_usage, name="reset_data_usage"),
 ]
