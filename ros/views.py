@@ -455,7 +455,7 @@ def reset_data_usage(request: Request) -> Response:
         if user:
             # Reset bytes in/out to zero
             # api.get_resource("/ip/hotspot/user").set(id=user_id, bytes="0")
-            api.call('reset-counters', {'numbers': user_id})
+            api.get_resource('/ip/hotspot/user').call('reset-counters', {'numbers': user_id})
             return Response({"message": "reset complete"}, status=status.HTTP_200_OK)
 
         # Check if the user exists in PPP secrets
