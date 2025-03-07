@@ -439,35 +439,38 @@ def change_password(request: Request) -> Response:
 
 @api_view(["POST"])
 def reset_data_usage(request: Request) -> Response:
-    """Change user password"""
+    """Reset data usage for user"""
 
     connection = openConnection(request.data)
     api = connection.get_api()
-
-    password = request.data["new_password"]
     username = request.data["username"]
 
+    # Get the ID of the user
+    # user = api.get_resource("/ip/hotspot/user").get(name=username)[0]
+
+    # user_id = user["id"]
+    # Reset the data usage of the user
     try:
-        # Get the ID of the user
-        user = api.get_resource("/ip/hotspot/user").get(name=username)[0]
+        # Find the queue by username (assuming the queue name is based on the username)
+        queues = api.get_resource("/queue/simple")
+        queue = queues.get(name=username)
 
-        user_id = user["id"]
-        # Update the password of the user
-        api.get_resource("/ip/hotspot/user").set(
-            **{
-                ".id": user_id,
-                "bytes-in": "0",  # Reset bytes-in to 0
-                "bytes-out": "0",  # Reset bytes-out to 0
-            }
-        )
+        if queue:
+            # Reset bytes in/out to zero
+            queue[0].set(bytes="0/0")
+            return Response({"message": "reset complete"}, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {"message": "reset failed:::no_user"}, status=status.HTTP_200_OK
+            )
 
-        # Close the connection
-        connection.disconnect()
-        return Response({"message": "Data reset"}, status=status.HTTP_200_OK)
     except ValueError as error:
         return Response(
             {"Error": str(error)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+    finally:
+        # Disconnect from the router
+        connection.disconnect()
 
 
 @api_view(["POST"])
