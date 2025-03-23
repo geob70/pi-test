@@ -55,7 +55,6 @@ async def send_to_node_api(data):
                 ssl=False,
             ) as response:
                 if response.status == 200:
-                    print("Data sent successfully:", data)
                     return Response({"message": "Data sent successfully"}, status=200)
                 else:
                     print(f"Failed to send data. Status code: {response.status}")
