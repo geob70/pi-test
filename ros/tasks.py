@@ -30,7 +30,7 @@ async def fetch_user_data(api):
     return all_users
 
 
-async def send_to_node_api(data):
+async def send_to_node_api(data, url):
     """
     Sends fetched user data to the Node.js API asynchronously.
     """
@@ -40,7 +40,7 @@ async def send_to_node_api(data):
         try:
             logger.info("Sending data to Node.js API")
             async with session.post(
-                "https://4576-77-99-33-6.ngrok-free.app/api/admin/router/data-usage",
+                url,
                 json=data,
                 ssl=False,
             ) as response:
@@ -95,7 +95,8 @@ async def periodic_send_data_usage():
             {
                 "data": data,
                 "hostname": credentials["hostname"],
-            }
+            },
+            credentials["url"],
         )
 
         # Wait 10 seconds before the next iteration
