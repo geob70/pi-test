@@ -99,4 +99,4 @@ async def periodic_send_data_usage():
         )
 
         # Wait 10 seconds before the next iteration
-        await asyncio.sleep(15)
+        await asyncio.sleep(30)
