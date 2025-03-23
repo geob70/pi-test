@@ -8,17 +8,7 @@ import routeros_api
 import json
 
 
-def openConnection():
-    # Get the current directory of this script
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-
-    # Construct the full path to the credentials.json file
-    credentials_file = os.path.join(current_dir, "credentials.json")
-
-    # Read credentials from the file
-    with open(credentials_file, "r") as file:
-        data = json.load(file)
-
+def openConnection(data):
     connection = routeros_api.RouterOsApiPool(
         host=data["host"],
         username=data["hostname"],
@@ -55,6 +45,7 @@ async def send_to_node_api(data):
                 ssl=False,
             ) as response:
                 if response.status == 200:
+                    logger.info("Data sent successfully")
                     return Response({"message": "Data sent successfully"}, status=200)
                 else:
                     print(f"Failed to send data. Status code: {response.status}")
@@ -77,11 +68,21 @@ async def periodic_send_data_usage():
     """
     Periodically sends user data usage to the Node.js API every 10 seconds.
     """
-    print("Task started printer")
+
+    # Get the current directory of this script
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # Construct the full path to the credentials.json file
+    credentials_file = os.path.join(current_dir, "credentials.json")
+
+    # Read credentials from the file
+    with open(credentials_file, "r") as file:
+        credentials = json.load(file)
+
     logger = logging.getLogger(__name__)
     logger.debug("Task started")
 
-    connection = openConnection()
+    connection = openConnection(credentials)
     api = connection.get_api()
 
     while True:
@@ -89,8 +90,13 @@ async def periodic_send_data_usage():
         data = await fetch_user_data(api)
         logger.info("Data fetch successfully")
 
-        # Send data asynchronously
-        await send_to_node_api(data)
+        # Send data and hostname object asynchronously
+        await send_to_node_api(
+            {
+                "data": data,
+                "hostname": credentials["hostname"],
+            }
+        )
 
         # Wait 10 seconds before the next iteration
         await asyncio.sleep(15)
