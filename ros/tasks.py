@@ -52,6 +52,7 @@ async def send_to_node_api(data):
             async with session.post(
                 "https://4576-77-99-33-6.ngrok-free.app/api/admin/router/data-usage",
                 json=data,
+                ssl=False,
             ) as response:
                 if response.status == 200:
                     print("Data sent successfully:", data)
